@@ -1,0 +1,34 @@
+type Task {
+    id: ID!
+    title: String!
+    description: String
+    is_completed: Boolean!
+    created_at: String!
+    updated_at: String!
+}
+
+input CreateTaskInput {
+    title: String! @rules(apply: ["required", "min:3"])
+    description: String
+    is_completed: Boolean
+}
+
+input UpdateTaskInput {
+    id: ID!
+    title: String @rules(apply: ["min:3"])
+    description: String
+    is_completed: Boolean
+}
+
+type Query {
+    tasks: [Task!]! @all(model: "Task")
+    task(id: ID! @eq): Task @find(model: "Task")
+    tasksByStatus(is_completed: Boolean! @eq): [Task!]! @all(model: "Task")
+}
+
+type Mutation {
+    createTask(input: CreateTaskInput! @spread): Task @create(model: "Task")
+    updateTask(input: UpdateTaskInput! @spread): Task @update(model: "Task")
+    deleteTask(id: ID!): Task @field(resolver: "App\\GraphQL\\Mutations\\DeleteTask")
+    toggleTask(id: ID!): Task @field(resolver: "App\\GraphQL\\Mutations\\ToggleTask")
+}
